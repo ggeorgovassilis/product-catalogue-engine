@@ -11,12 +11,13 @@
 <h3>Attributes of this entity:</h3>
 <table class="attributes">
 	<c:forEach items="${entity}" var="e">
-		<tr valign="top" class="attributeRow ${e.key}">
-		<td align="right" class="attributeKey">${e.key}</td>
-		<td class="attributeValue ${e.key}">
-			<spring:message text="${e.value}" arguments="${e.value}" code="attribute.${e.key}"/>
-		</td>
-		</tr>
+		<c:if test="${e.value ne null and e.value ne ''}">
+			<tr valign="top" class="attributeRow ${e.key}">
+			<td align="right" class="attributeKey">${e.key}</td>
+			<td class="attributeValue ${e.key}">
+				<spring:message text="${e.value}" arguments="${e.value}" code="attribute.${e.key}"/>
+			</td>
+			</tr>
+		</c:if>
 	</c:forEach>
 </table>
-
