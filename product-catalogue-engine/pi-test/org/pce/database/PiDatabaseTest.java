@@ -1,5 +1,7 @@
 package org.pce.database;
 
+import java.util.logging.Logger;
+
 import gr.open.pi.PIConstants;
 import gr.open.pi.ProductInformer;
 
@@ -39,12 +41,13 @@ public class PiDatabaseTest {
 
 	@Before
 	public void setup() throws Exception{
-		setupFakePi();
+		//setupFakePi();
+		setupTheRealPi();
 		ProductDatabaseExcelImpl excel = new ProductDatabaseExcelImpl("database2.xls");
 		compositeDatabase = new CompositeDatabase();
 		compositeDatabase.addDatabase(piDatabase);
 		compositeDatabase.addDatabase(excel);
-		engine = new RulesEngineJsImpl(excel);
+		engine = new RulesEngineJsImpl(compositeDatabase);
 	}
 	
 	@Test
@@ -62,4 +65,28 @@ public class PiDatabaseTest {
 		engine.evaluateEntity(e);
 	}
 
+	@Test
+	public void testBundle1(){
+		Entity e = compositeDatabase.readEntity("Bundle1");
+		e = engine.evaluateEntity(e);
+		assertEquals("283.74",e.getAttribute("Price"));
+		assertEquals("17532,17533,17534,17535,17536,23410,2940,2943,37817,39996,39997,42982,43143,46733,46953,46955,47353,47354,47501,49682,50049,50050,50764,52639,52640,52641,52642,52643,52644,52645,52646,52672,52673", e.getAttribute("CaseID"));
+	}
+
+	@Test
+	public void testBundle2(){
+		Entity laptop = compositeDatabase.readEntity("52199");
+		Entity laptopCase = compositeDatabase.readEntity("17535");
+		double laptopPrice = Double.parseDouble(laptop.getAttribute("price"));
+		double casePrice = Double.parseDouble(laptopCase.getAttribute("price"));
+		double combinedPrice =  0.9*(laptopPrice+ casePrice);
+		System.out.println("laptop price "+laptopPrice); //283.74
+		System.out.println("case price "+casePrice); //50
+		System.out.println("combined price "+combinedPrice);
+
+		Entity bundle = compositeDatabase.readEntity("Bundle2");
+		bundle = engine.evaluateEntity(bundle);
+		
+		assertEquals(combinedPrice,Double.parseDouble(bundle.getAttribute("Price")),0.2);
+	}
 }

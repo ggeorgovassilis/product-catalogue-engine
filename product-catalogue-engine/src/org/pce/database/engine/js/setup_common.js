@@ -2,6 +2,10 @@ function log(message){
 	__pce_logger.log(__pce_logging_priority, "script: "+message);
 }
 
+function hardlog(message){
+	__pce_logger.info("script: "+message);
+}
+
 function date(s){
 	var parts = /(\d\d)\/(\d\d)\/(\d\d\d\d)/.exec(s);
 	if (!parts)

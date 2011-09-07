@@ -22,7 +22,6 @@ public class PiDatabase implements ProductDatabase {
 	
 	private static final Logger logger = Logger.getLogger(PiDatabase.class);
 	private ProductInformer pi;
-	private final List<Attribute> attributes = new ArrayList<Attribute>();
 	
 	public PiDatabase(ProductInformer pi) {
 		this.pi = pi;
@@ -30,9 +29,14 @@ public class PiDatabase implements ProductDatabase {
 	
 	@Override
 	public Entity readEntity(String ID) {
+		//PI does only numbers
+		if (!Utils.isNumber(ID))
+			return null;
+		ID = Utils.makeInteger(ID);
 		List<Integer> productIds = new ArrayList<Integer>();
 		productIds.add(Integer.parseInt(ID));
 		try {
+			List<Attribute> attributes = new ArrayList<Attribute>();
 			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_ERP_CODE));
 			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_NAME));
 			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_PRICE));
@@ -66,7 +70,8 @@ public class PiDatabase implements ProductDatabase {
 			}
 		}
 		Category c = pi.getCategories().getCategory(item.getCategoryId());
-		e.setCategory(Utils.stripSpacesAndSlashes(c.getFullName()));
+//		e.setCategory(Utils.stripSpacesAndSlashes(c.getFullName()));
+		e.setCategory(Utils.normalizeCategoryName(c.getFullName()));
 		e.setAttribute("ID",String.valueOf(item.getId()));
 		return e;
 	}
@@ -111,29 +116,32 @@ public class PiDatabase implements ProductDatabase {
 		
 		return results;
 	}
+	
+	private List<Category> getCategoriesRecursively(Category category) throws StoreException{
+		List<Category> categories = new ArrayList<Category>();
+		if (category.isLeaf())
+			return categories;
+		List<Category> origCategories = category.getChildCategories();
+		categories.addAll(origCategories);
+		for (Category c:origCategories){
+			categories.addAll(getCategoriesRecursively(c));
+		}
+		return categories;
+	}
 
 	private Category getCategoryByName(String categoryName) {
 		try {
+			String realCategoryName = Utils.undoStripSpacesAndSlashes(categoryName);
+			logger.debug("looking for category:" + realCategoryName);
+			List<Category> allCategories = new ArrayList<Category>();
 			List<Category> categories = pi.getCategories().getCategories();
 			for (Category category : categories) {
-				String realCategoryName = Utils.undoStripSpacesAndSlashes(categoryName);
-				logger.debug("realCategoryName:" + realCategoryName);
-				if (category.getFullName().equals(realCategoryName)) {
+				allCategories.addAll(getCategoriesRecursively(category));
+			}
+			for (Category category : allCategories) {
+				String normName = Utils.normalizeCategoryName(category.getFullName());
+				if (normName.equals(categoryName)) {
 					return category;
-				}
-				if (category.getLevel()==2) {
-					for (Category category2 : (List<Category>)category.getChildCategories()) {
-						if (category2.getFullName().equals(realCategoryName)) {
-							return category2;
-						}
-						if (category.getLevel()==3) {
-							for (Category category3 : (List<Category>)category2.getChildCategories()) {
-								if (category3.getFullName().equals(realCategoryName)) {
-									return category3;
-								}
-							}
-						}
-					}
 				}
 			}
 		} catch (StoreException e) {
@@ -146,10 +154,13 @@ public class PiDatabase implements ProductDatabase {
 	public List<String> getAllCategories() {
 		List<String> results = new ArrayList<String>();
 		try {
-			List<Category> categories = pi.getCategories().getCategories();
-			for (Category category : categories) {
-				results.add(category.getFullName());
+			List<Category> origCategories = pi.getCategories().getCategories();
+			List<Category> categories = new ArrayList<Category>(origCategories);
+			for (Category category : origCategories) {
+				categories.addAll(getCategoriesRecursively(category));
 			}
+			for (Category c:categories)
+				results.add(c.getFullName());
 		} catch (StoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -158,7 +169,14 @@ public class PiDatabase implements ProductDatabase {
 
 	@Override
 	public boolean isCategory(String category) {
-		return getAllCategories().contains(category);
+		String normCategory = Utils.normalizeCategoryName(category);
+		List<String> categoryNames = getAllCategories(); 
+		for (String c:categoryNames){
+			String nc = Utils.normalizeCategoryName(c); 
+			if (nc.equals(normCategory))
+				return true;
+		}
+		return false;
 	}
 
 	@Override

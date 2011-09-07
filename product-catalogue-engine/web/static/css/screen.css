@@ -146,13 +146,13 @@ body {
 }
 
 #left {
-	width: 140px;
+	width: 200px;
 	padding: 20px 20px 20px 20px;
 	float: left;
 }
 
 #center {
-	width: 760px;
+	width: 700px;
 	padding: 10px 20px 20px 20px;
 	float: left;
 }
@@ -262,7 +262,6 @@ a img {
 #sidebar ul.submenu li a{
 	font-size: 12px;
 	padding-left: 20px;
-	white-space: nowrap;
 }
 
 table.attributes {
