@@ -74,7 +74,7 @@ public class RulesEngineJsImpl implements RulesEngine {
 			r.abort = !signActive;
 			return r;
 		} catch (Exception e) {
-			logger.error(expression + "\n" + script);
+			logger.error(expression + "\n" + Utils.numberLines(script));
 			throw new RuntimeException(e);
 		}
 	}

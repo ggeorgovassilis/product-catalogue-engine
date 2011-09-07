@@ -26,12 +26,17 @@ context.__noSuchMethod__=function(id, args){
 		var list = __pce_db.getAllEntitiesInCategory(id);
 		list = javaListToArray(list);
 		var filteredList = new Array();
-		if (context.condition)
+		if (context.condition.length>0){
 			for (var i=0;i<list.length;i++){
 				for (var c=0;c<context.condition.length;c++)
 					if (context.condition[c](list[i], context.attribute))
 						filteredList[filteredList.length] = list[i].getID();
-			}
+			}}
+		else{
+			// keep IDs
+			for (var i=0;i<list.length;i++)
+				filteredList.push(list[i].getID());
+		}
 		filteredList.sort();
 		filteredList = removeDuplicatesFromSortedList(filteredList);
 		context.value = filteredList;
@@ -116,7 +121,7 @@ context.DB= function(context){
 }
 
 context.set = function(context){
-	log("set  "+context.attribute+" = "+context.value);
+	hardlog("set  "+context.attribute+" = "+context.value);
 	context.originalProduct.setAttribute(context.attribute,context.value);
 	return context;
 }
@@ -137,8 +142,22 @@ context.discount = function(context){
 	} else {
 		value = parseFloat(value);
 	}
-	log("discount "+attr + " = "+value);
-	context.originalProduct.setAttribute(context.attribute, value);
+	hardlog("discount "+attr + " = "+value);
+	context.originalProduct.setAttribute(""+attr, value);
+	return context;
 }
 
+context.increase = function(context){
+	var value = context.value;
+	value = parseFloat(value);
+	var attr = context.attribute;
+	var currentValue = parseFloat(context.originalProduct.getAttribute(attr));
+	if (!isNumber(currentValue))
+		currentValue = 0;
+	var newValue = ""+(currentValue+value);
+	hardlog("increase "+attr + " of "+currentValue+" by "+value + " to "+newValue);
+	context.originalProduct.setAttribute(attr, newValue);
+	hardlog("which now is "+context.originalProduct.getAttribute(attr));
+	return context;
+}
 

@@ -10,32 +10,32 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.WebUtils;
 
-public class Utils implements ServletContextAware{
-	
+public class Utils implements ServletContextAware {
+
 	public static ServletContext servletContext;
-	
-	public static String numberLines(String s){
+
+	public static String numberLines(String s) {
 		String result = "";
 		String lines[] = s.split("\n");
-		for (int line = 0;line<lines.length;line++){
-			result = result + pad(""+(line+1), 3)+": "+lines[line]+"\n";
+		for (int line = 0; line < lines.length; line++) {
+			result = result + pad("" + (line + 1), 3) + ": " + lines[line]
+					+ "\n";
 		}
 		return result;
 	}
-	
-	public static InputStream getResourceAsString(String classpath){
+
+	public static InputStream getResourceAsString(String classpath) {
 		InputStream in = Utils.class.getResourceAsStream(classpath);
-		if (in!=null)
+		if (in != null)
 			return in;
-		in = Utils.class.getClassLoader().getResourceAsStream(
-				classpath);
-		if (in!=null)
+		in = Utils.class.getClassLoader().getResourceAsStream(classpath);
+		if (in != null)
 			return in;
 		in = ClassLoader.getSystemResourceAsStream(classpath);
-		if (in!=null)
+		if (in != null)
 			return in;
 		in = ClassLoader.getSystemClassLoader().getResourceAsStream(classpath);
-		if (in!=null)
+		if (in != null)
 			return in;
 		in = servletContext.getResourceAsStream(classpath);
 		return in;
@@ -43,7 +43,7 @@ public class Utils implements ServletContextAware{
 
 	public static String readResource(String classpath) {
 		try {
-			InputStream in = getResourceAsString(classpath); 
+			InputStream in = getResourceAsString(classpath);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			int i;
 			while (-1 != (i = in.read()))
@@ -69,28 +69,53 @@ public class Utils implements ServletContextAware{
 				return true;
 		return false;
 	}
-	
+
 	public static String stripSpacesAndSlashes(String s) {
-		if (s == null) return s;
-		s = s.replaceAll(" ","_");
-		return s.replaceAll("/","-");
+		if (s == null)
+			return s;
+		s = s.replaceAll(" ", "_");
+		return s.replaceAll("/", "-");
 	}
-	
+
+	public static String normalizeCategoryName(String s) {
+		if (s == null)
+			return s;
+		s = s.replaceAll(" ", "_").replaceAll("/", "_").replaceAll("-", "_").replaceAll("&","_");
+		while (s.contains("__"))
+			s = s.replaceAll("__", "_");
+		return s;
+	}
+
 	public static String undoStripSpacesAndSlashes(String s) {
-		if (s == null) return s;
-		s = s.replaceAll("_"," ");
-		return s.replaceAll("-","/");
+		if (s == null)
+			return s;
+		s = s.replaceAll("_", " ");
+		return s.replaceAll("-", "/");
 	}
-	
-	public static String pad(String s, int length){
-		while (s.length()<length)
-			s+=" ";
+
+	public static String pad(String s, int length) {
+		while (s.length() < length)
+			s += " ";
 		return s;
 	}
 
 	@Override
 	public void setServletContext(ServletContext context) {
 		servletContext = context;
+	}
+	
+	public static String makeInteger(String s){
+		int v = (int)Double.parseDouble(s);
+		return ""+v;
+	}
+
+	public static boolean isNumber(String s) {
+		try {
+			Double.parseDouble(s);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }
