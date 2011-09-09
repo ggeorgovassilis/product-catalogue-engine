@@ -36,12 +36,7 @@ public class PiDatabase implements ProductDatabase {
 		List<Integer> productIds = new ArrayList<Integer>();
 		productIds.add(Integer.parseInt(ID));
 		try {
-			List<Attribute> attributes = new ArrayList<Attribute>();
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_ERP_CODE));
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_NAME));
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_PRICE));
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_DESCRIPTION));
-			ReportResult rr = pi.getReports().getProductListByIds(productIds, attributes, 0, false, 0, 10, 1);
+			ReportResult rr = pi.getReports().getProductListByIds(productIds, getAttributes(), 0, false, 0, 10, 1);
 			List<ProductListItem> results = rr.getResults();
 			if (results.isEmpty())
 				return null;
@@ -91,15 +86,10 @@ public class PiDatabase implements ProductDatabase {
 		if (category == null) {
 			return results;
 		}
-		List<Attribute> attributes = new ArrayList<Attribute>();
 		try {
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_ERP_CODE));
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_NAME));
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_PRICE));
-			attributes.add(pi.getAttributes().getAttribute(PIConstants.ATTR_DESCRIPTION));
 			ReportResult rr = pi.getReports().getProductList(category, null, null, 
 					ProductInformer.VISIBILITY_ACTIVE, null, null, null, null, null, 
-		            Reports.NO_LOGS, attributes, true, false, 
+		            Reports.NO_LOGS, getAttributes(), true, false, 
 		            null, Reports.NO_SORT, false, 0, Reports.ALL_RESULTS, true, Reports.PRODUCTS_ACTIVE);
 
 			List<ProductListItem> plis = rr.getResults();
@@ -187,5 +177,17 @@ public class PiDatabase implements ProductDatabase {
 		attributes.add(PIConstants.ATTR_PRICE);
 		attributes.add(PIConstants.ATTR_DESCRIPTION);
 		return attributes;
+	}
+	
+	public List<Attribute> getAttributes() {
+		List<Attribute> results = new ArrayList<Attribute>();
+		for (String attributeName : getAllAttributeNames()) {
+			try {
+				results.add(pi.getAttributes().getAttribute(attributeName));
+			} catch (StoreException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return results;
 	}
 }

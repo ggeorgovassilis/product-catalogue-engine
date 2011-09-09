@@ -4,9 +4,9 @@
         <wb-resource deploy-path="/" source-path="/web"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/doc"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/pi"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/pi-test"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/doc"/>
         <property name="context-root" value="product-catalogue-engine"/>
         <property name="java-output-path" value="/product-catalogue-engine/bin"/>
     </wb-module>

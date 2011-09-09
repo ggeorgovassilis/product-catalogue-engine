@@ -21,6 +21,7 @@ public class CategoryController {
 	@Resource(name="entityDatabase")
 	ProductDatabase database;
 	
+	
 	@RequestMapping(value="/category/{category}", method=RequestMethod.GET)
 	public String getView(@PathVariable String category, Model model) throws Exception{
 		logger.debug("CATEGORY:" + category);
