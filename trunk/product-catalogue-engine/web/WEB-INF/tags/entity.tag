@@ -6,10 +6,13 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>  
 
 <ct:call object="${entity}" method="getAttribute" debug="true" name="description" return="description"/>
-<ct:call object="${entity}" method="getAttribute" debug="true" name="Description" return="Description"/>
-<h1>Entity ${entity.ID} - ${description}${Description}</h1>
-<h3>Attributes of this entity:</h3>
-<table class="attributes">
+<ct:call object="${entity}" method="getAttribute" debug="true" name="name" return="name"/>
+<h1>Entity ${entity.ID}  <b>${name}</b> ${description}</h1>
+<h3 class="entity">Attributes of this entity:</h3>
+<div class="prodimg">
+	<img alt="" src="/product-catalogue-engine/images/${productId}"> 
+</div>
+<table class="attributes" style="float:left;">
 	<c:forEach items="${entity}" var="e">
 		<c:if test="${e.value ne null and e.value ne ''}">
 			<tr valign="top" class="attributeRow ${e.key}">
