@@ -15,6 +15,7 @@ public class ExcelDbAccessInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	ProductDatabaseExcelImpl entityDatabaseExcel;
 	
+	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		logger.info("REFRESHING EXCEL DB...");
 		entityDatabaseExcel.refreshDB();

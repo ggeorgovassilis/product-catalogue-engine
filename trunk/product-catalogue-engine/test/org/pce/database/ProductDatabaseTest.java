@@ -15,7 +15,7 @@ public class ProductDatabaseTest {
 
 	@Before
 	public void setup() throws Exception {
-		database = new ProductDatabaseExcelImpl("database2.xls");
+		database = new ProductDatabaseExcelImpl("./doc/database2.xls");
 		rulesEngine = new RulesEngineJsImpl(database);
 	}
 
