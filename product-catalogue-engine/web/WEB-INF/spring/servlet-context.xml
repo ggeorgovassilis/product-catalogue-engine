@@ -13,7 +13,8 @@
 	<context:component-scan base-package="org.pce.web" />
 
 	<mvc:annotation-driven />
-
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
 <!-- 
 	<mvc:view-controller path="/" view-name="welcome" />
  -->
@@ -39,7 +40,7 @@
  -->
 
 	<bean id="entityDatabaseExcel" class="org.pce.database.excel.ProductDatabaseExcelImpl" depends-on="utilsDummy">
-		<constructor-arg value="/WEB-INF/db/database2.xls" />
+		<constructor-arg value="${pathToDatabase}" />
 	</bean>
 	
 	<bean id="entityDatabasePi" class="org.pce.database.pi.PiDatabase">

@@ -1,5 +1,7 @@
 package org.pce.database.excel;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -25,36 +27,42 @@ import org.springframework.core.io.FileSystemResource;
 
 public class ProductDatabaseExcelImpl implements ProductDatabase {
 
-	private final static Logger logger = Logger.getLogger(ProductDatabaseExcelImpl.class);
+	private final static Logger logger = Logger
+			.getLogger(ProductDatabaseExcelImpl.class);
 	private HSSFWorkbook workbook;
-	private String excelFile;
+	private String path;
 	private Map<String, Entity> entities = new HashMap<String, Entity>();
 	private DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-	private String file;
 	long lastModifiedExcelDbTimestamp;
-	
+
 	public ProductDatabaseExcelImpl(String file) throws Exception {
-		this.file = file;
-		loadExcelDb(file);
+		this.path = file;
+		loadExcelDbIfModified();
 	}
 
-	private void loadExcelDb(String file) throws IOException {
-		
+	private void loadExcelDbIfModified() {
+		try {
+			_loadExcelDbIfModified();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void _loadExcelDbIfModified() throws IOException {
+
+		File file = new File(path);
+		if (!file.canRead())
+			throw new IllegalArgumentException("Can't read " + path);
+
 		InputStream is = null;
 
-		FileSystemResource resource = new FileSystemResource("file:" + file);
-		logger.debug("DB Resource:" + resource.getPath());
-		long currentModifiedExcelDbTimestamp =  resource.getFile().lastModified();
+		long currentModifiedExcelDbTimestamp = file.lastModified();
 		if (currentModifiedExcelDbTimestamp > lastModifiedExcelDbTimestamp) {
-			logger.debug("UPDATED EXCEL DB FOUND...");
+			logger.info("UPDATED EXCEL DB FOUND...");
 			lastModifiedExcelDbTimestamp = currentModifiedExcelDbTimestamp;
 		}
-		is = resource.getInputStream();
+		is = new FileInputStream(file);
 
-//		is = Utils.getResourceAsString(file);
-
-		if (is == null)
-			throw new IllegalArgumentException("Couldn't resolve "+file+" on classpath");
 		entities = new HashMap<String, Entity>();
 		workbook = new HSSFWorkbook(is);
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -113,16 +121,19 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 
 	@Override
 	public Entity readEntity(String ID) {
+		loadExcelDbIfModified();
 		return entities.get(ID);
 	}
 
 	@Override
 	public List<Entity> getAllEntities() {
+		loadExcelDbIfModified();
 		return new ArrayList<Entity>(entities.values());
 	}
 
 	@Override
 	public List<Entity> getAllEntitiesInCategory(String category) {
+		loadExcelDbIfModified();
 		List<Entity> list = new ArrayList<Entity>();
 		for (Entity e : getAllEntities())
 			if (e.getCategory().equals(category))
@@ -132,6 +143,7 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 
 	@Override
 	public List<String> getAllCategories() {
+		loadExcelDbIfModified();
 		List<String> categories = new ArrayList<String>();
 		for (Entity e : getAllEntities())
 			if (!categories.contains(e.getCategory()))
@@ -141,29 +153,24 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 
 	@Override
 	public boolean isCategory(String category) {
+		loadExcelDbIfModified();
 		return getAllCategories().contains(category);
 	}
 
 	@Override
 	public List<String> getAllAttributeNames() {
-		//TODO: replace iteration with a smarter approach, i.e. cache categories
+		loadExcelDbIfModified();
+		// TODO: replace iteration with a smarter approach, i.e. cache
+		// categories
 		List<Entity> entities = getAllEntities();
 		Set<String> attributes = new HashSet<String>();
-		for (Entity e:entities)
+		for (Entity e : entities)
 			attributes.addAll(e.keySet());
 		return new ArrayList<String>(attributes);
 	}
 
-	public String getExcelFile() {
-		return excelFile;
-	}
-
-	public void setExcelFile(String excelFile) {
-		this.excelFile = excelFile;
-	}
-
 	public void refreshDB() throws IOException {
-		loadExcelDb(file);
+		loadExcelDbIfModified();
 	}
 
 }

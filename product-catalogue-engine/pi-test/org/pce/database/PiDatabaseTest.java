@@ -1,5 +1,6 @@
 package org.pce.database;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import gr.open.pi.PIConstants;
@@ -43,7 +44,7 @@ public class PiDatabaseTest {
 	public void setup() throws Exception{
 		//setupFakePi();
 		setupTheRealPi();
-		ProductDatabaseExcelImpl excel = new ProductDatabaseExcelImpl("database2.xls");
+		ProductDatabaseExcelImpl excel = new ProductDatabaseExcelImpl("./doc/database2.xls");
 		compositeDatabase = new CompositeDatabase();
 		compositeDatabase.addDatabase(piDatabase);
 		compositeDatabase.addDatabase(excel);
@@ -70,7 +71,7 @@ public class PiDatabaseTest {
 		Entity e = compositeDatabase.readEntity("Bundle1");
 		e = engine.evaluateEntity(e);
 		assertEquals("283.74",e.getAttribute("Price"));
-		assertEquals("17532,17533,17534,17535,17536,23410,2940,2943,37817,39996,39997,42982,43143,46733,46953,46955,47353,47354,47501,49682,50049,50050,50764,52639,52640,52641,52642,52643,52644,52645,52646,52672,52673", e.getAttribute("CaseID"));
+		assertEquals("2940,52639,52640", e.getAttribute("CaseID"));
 	}
 
 	@Test
