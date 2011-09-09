@@ -1,8 +1,10 @@
 package org.pce.database.pi;
 
 import gr.open.pi.Attribute;
+import gr.open.pi.Binary;
 import gr.open.pi.Category;
 import gr.open.pi.PIConstants;
+import gr.open.pi.Product;
 import gr.open.pi.ProductInformer;
 import gr.open.pi.Reports;
 import gr.open.pi.Reports.ProductListItem;
@@ -11,6 +13,8 @@ import gr.open.pi.StoreException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.pce.database.ProductDatabase;
@@ -182,6 +186,25 @@ public class PiDatabase implements ProductDatabase {
 		attributes.add(PIConstants.ATTR_PRICE);
 		attributes.add(PIConstants.ATTR_DESCRIPTION);
 		return attributes;
+	}
+	
+	public ProductInformer getPi() {
+		return this.pi;
+	}
+	
+	public void streamBinary(HttpServletResponse response, int productId, int variant) {
+		try {
+			
+			Product p = pi.getProducts().getProduct(productId);
+			Attribute a = pi.getAttributes().getAttribute(PIConstants.ATTR_IMAGE);
+			Binary b = p.getBinary(a);
+			
+			response.setContentType(b.getContentType());
+			b.write(variant, response.getOutputStream());
+		}
+		catch (Exception e) {
+			logger.error(e.toString(), e);
+		}
 	}
 	
 	public List<Attribute> getAttributes() {
