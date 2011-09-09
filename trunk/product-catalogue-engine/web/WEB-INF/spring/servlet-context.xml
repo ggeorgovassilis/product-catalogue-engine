@@ -52,6 +52,7 @@
 		</constructor-arg>
 	</bean>
 	
+	
 	<bean id="entityDatabase" class="org.pce.database.CompositeDatabase">
 	<property name="databases">
 		<util:list>
