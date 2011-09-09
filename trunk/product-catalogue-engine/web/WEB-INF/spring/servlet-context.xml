@@ -39,24 +39,24 @@
  -->
 
 	<bean id="entityDatabaseExcel" class="org.pce.database.excel.ProductDatabaseExcelImpl" depends-on="utilsDummy">
-		<constructor-arg value="/database2.xls" />
+		<constructor-arg value="/WEB-INF/db/database2.xls" />
 	</bean>
 	
 	<bean id="entityDatabasePi" class="org.pce.database.pi.PiDatabase">
-	<constructor-arg>
-		<bean class="gr.open.pi.ProductInformer">
-			<constructor-arg value="root"/>
-			<constructor-arg value="root"/>
-		</bean>
-	</constructor-arg>
+		<constructor-arg>
+			<bean class="gr.open.pi.ProductInformer">
+				<constructor-arg value="root"/>
+				<constructor-arg value="root"/>
+			</bean>
+		</constructor-arg>
 	</bean>
 	
 	<bean id="entityDatabase" class="org.pce.database.CompositeDatabase">
 	<property name="databases">
-	<util:list>
-		<ref bean="entityDatabaseExcel"/>
-		<ref bean="entityDatabasePi"/>
-	</util:list>
+		<util:list>
+			<ref bean="entityDatabaseExcel"/>
+			<ref bean="entityDatabasePi"/>
+		</util:list>
 	</property>
 	</bean>
 
@@ -80,4 +80,17 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	<!-- 
+    <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+	 -->
+        <property name="interceptors">
+            <list>
+                <ref bean="excelDbAccessInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="excelDbAccessInterceptor" class="org.pce.web.ExcelDbAccessInterceptor"/>
 </beans>

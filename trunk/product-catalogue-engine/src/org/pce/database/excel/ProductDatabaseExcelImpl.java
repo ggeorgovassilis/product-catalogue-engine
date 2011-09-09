@@ -1,16 +1,17 @@
 package org.pce.database.excel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -20,19 +21,41 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.pce.database.ProductDatabase;
 import org.pce.model.Entity;
 import org.pce.utils.Utils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.core.io.FileSystemResource;
 
 public class ProductDatabaseExcelImpl implements ProductDatabase {
 
+	private final static Logger logger = Logger.getLogger(ProductDatabaseExcelImpl.class);
 	private HSSFWorkbook workbook;
+	private String excelFile;
 	private Map<String, Entity> entities = new HashMap<String, Entity>();
 	private DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-
+	private String file;
+	long lastModifiedExcelDbTimestamp;
+	
 	public ProductDatabaseExcelImpl(String file) throws Exception {
-		InputStream is = Utils.getResourceAsString(file);
+		this.file = file;
+		loadExcelDb(file);
+	}
+
+	private void loadExcelDb(String file) throws IOException {
+		
+		InputStream is = null;
+
+		FileSystemResource resource = new FileSystemResource("file:" + file);
+		logger.debug("DB Resource:" + resource.getPath());
+		long currentModifiedExcelDbTimestamp =  resource.getFile().lastModified();
+		if (currentModifiedExcelDbTimestamp > lastModifiedExcelDbTimestamp) {
+			logger.debug("UPDATED EXCEL DB FOUND...");
+			lastModifiedExcelDbTimestamp = currentModifiedExcelDbTimestamp;
+		}
+		is = resource.getInputStream();
+
+//		is = Utils.getResourceAsString(file);
+
 		if (is == null)
 			throw new IllegalArgumentException("Couldn't resolve "+file+" on classpath");
+		entities = new HashMap<String, Entity>();
 		workbook = new HSSFWorkbook(is);
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			HSSFSheet sheet = workbook.getSheetAt(i);
@@ -129,6 +152,18 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 		for (Entity e:entities)
 			attributes.addAll(e.keySet());
 		return new ArrayList<String>(attributes);
+	}
+
+	public String getExcelFile() {
+		return excelFile;
+	}
+
+	public void setExcelFile(String excelFile) {
+		this.excelFile = excelFile;
+	}
+
+	public void refreshDB() throws IOException {
+		loadExcelDb(file);
 	}
 
 }
