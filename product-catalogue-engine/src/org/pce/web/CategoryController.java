@@ -32,17 +32,22 @@ public class CategoryController {
 		model.addAttribute("entities", entities);
 		model.addAttribute("category", category);
 
+		putCategoriesInModel(model);
 		return "category";
 	} 
 	
 	@RequestMapping(value="/categories", method=RequestMethod.GET)
 	public String getView(Model model) throws Exception{
 
+		putCategoriesInModel(model);
+		return "categories";
+	}
+
+	private void putCategoriesInModel(Model model) {
 		List<String> categories = database.getAllCategories();
 		if (categories == null) {
 			throw new ResourceNotFoundException("All categories");
 		}
 		model.addAttribute("categories", categories);
-		return "categories";
 	}
 }

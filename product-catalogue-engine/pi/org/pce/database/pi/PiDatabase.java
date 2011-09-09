@@ -126,6 +126,7 @@ public class PiDatabase implements ProductDatabase {
 			List<Category> allCategories = new ArrayList<Category>();
 			List<Category> categories = pi.getCategories().getCategories();
 			for (Category category : categories) {
+				allCategories.add(category);
 				allCategories.addAll(getCategoriesRecursively(category));
 			}
 			for (Category category : allCategories) {
@@ -149,8 +150,12 @@ public class PiDatabase implements ProductDatabase {
 			for (Category category : origCategories) {
 				categories.addAll(getCategoriesRecursively(category));
 			}
-			for (Category c:categories)
-				results.add(c.getFullName());
+			for (Category c:categories) {
+				// excluding static categories (they don't contain products)
+				if (!c.isStatic()) {
+					results.add(c.getFullName());
+				}
+			}
 		} catch (StoreException e) {
 			throw new RuntimeException(e);
 		}
