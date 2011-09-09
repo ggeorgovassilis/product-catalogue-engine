@@ -1,6 +1,7 @@
 package org.pce.web;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -33,6 +34,7 @@ public class EntityController {
 		}
 		model.addAttribute("entity", entity);
 		model.addAttribute("category", entity.getCategory());
+		putCategoriesInModel(model);
 		return "entity";
 	}
 	
@@ -44,6 +46,15 @@ public class EntityController {
 			throw new ResourceNotFoundException("All entities");
 		}
 		model.addAttribute("entities", entities);
+		putCategoriesInModel(model);
 		return "entities";
+	}
+	
+	private void putCategoriesInModel(Model model) {
+		List<String> categories = database.getAllCategories();
+		if (categories == null) {
+			throw new ResourceNotFoundException("All categories");
+		}
+		model.addAttribute("categories", categories);
 	}
 }

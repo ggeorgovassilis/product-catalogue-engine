@@ -16,6 +16,8 @@
     <meta name="abstract" content="Site description here" />
     <meta name="MSSmartTagsPreventParsing" content="true" />
     <link id="theme" rel="stylesheet" type="text/css" href="/product-catalogue-engine/static/css/screen.css" title="theme" />
+    <script type="text/javascript" src="/product-catalogue-engine/static/js/jquery.js"/></script>
+    <script type="text/javascript" src="/product-catalogue-engine/static/js/menu.js"/></script>
   </head>
   <body> 
     <div id="wrapper"> 
@@ -29,7 +31,10 @@
             <!--  content -->  
             <div id="content"> 
               <div id="left"> 
-                <div id="sidebar"> 
+              <!-- 
+                <div id="sidebar" class="sidebarmenu"> 
+               -->
+                <div class="sidebarmenu"> 
                   <tiles:insertAttribute name="menu" />
                 </div> 
               </div>  
