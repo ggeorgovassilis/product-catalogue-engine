@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.pce.database.ProductDatabase;
 import org.pce.database.engine.RulesEngine;
+import org.pce.database.pi.PiDatabase;
 import org.pce.model.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,7 +36,9 @@ public class EntityController {
 		}
 		model.addAttribute("entity", entity);
 		model.addAttribute("category", entity.getCategory());
+		model.addAttribute("productId", id);
 		putCategoriesInModel(model);
+
 		return "entity";
 	}
 	
@@ -50,6 +54,16 @@ public class EntityController {
 		return "entities";
 	}
 	
+	@Autowired
+	PiDatabase entityDatabasePi;
+	
+	@RequestMapping(value="/images/{id}", method=RequestMethod.GET)
+	public void showImage(HttpServletResponse response, @PathVariable String id) {
+		int productId = Integer.parseInt(id);
+		
+		entityDatabasePi.streamBinary(response, productId, 2);
+	}
+
 	private void putCategoriesInModel(Model model) {
 		List<String> categories = database.getAllCategories();
 		if (categories == null) {
@@ -57,4 +71,5 @@ public class EntityController {
 		}
 		model.addAttribute("categories", categories);
 	}
+
 }
