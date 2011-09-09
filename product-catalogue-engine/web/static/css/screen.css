@@ -265,7 +265,19 @@ a img {
 }
 
 table.attributes {
-	width: 100%;
+}
+
+.container{
+	overflow:auto;
+}
+
+h3.entity{
+	padding-bottom:20px
+}
+
+.prodimg{
+	float:left;
+	padding-right:10px;
 }
 
 tr.attributeRow {
@@ -366,7 +378,11 @@ width: 200px; /*Sub Menu Items width */
 top: 0;
 visibility: hidden;
 }
- 
+
+.catnav{
+	clear:left;
+}
+
 /* Holly Hack for IE \*/
 * html .sidebarmenu ul li { float: left; height: 1%; }
 * html .sidebarmenu ul li a { height: 1%; }
