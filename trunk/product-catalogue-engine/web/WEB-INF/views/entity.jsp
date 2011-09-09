@@ -9,4 +9,4 @@
 	<pce:entity value="${entity}"/>
 </div>
 
-<p>All entities of category <a href="/product-catalogue-engine/category/${category}">${category}</a>
+<p class="catnav">All entities of category <a href="/product-catalogue-engine/category/${category}">${category}</a>
