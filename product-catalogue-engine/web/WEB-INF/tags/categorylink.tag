@@ -1,1 +1,0 @@
-<%@ attribute name="value" required="true"  rtexprvalue="true"%><a href="/product-catalogue-engine/category/<%=org.pce.utils.Utils.normalizeCategoryName(""+jspContext.getAttribute("value")) %>"><jsp:doBody/></a>
