@@ -265,6 +265,9 @@ a img {
 }
 
 table.attributes {
+	clear: none;
+    float: left;
+    width: 600px;
 }
 
 .container{
