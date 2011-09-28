@@ -40,7 +40,7 @@ public class TestSupport {
 		condition("Price is 2",	"Price == 2");
 		condition("Price is 2 and Name is 'XMAS'",	"Price == 2 && Name == 'XMAS'");
 		condition("Price > 10 or (Name is 'New XMAS' and Price < 20)",	"Price > 10 || (Name == 'New XMAS' && Price < 20)");
-		condition("Type is 'Mobile Phone Offer' and Name startswith('XMAS')",	"Type == 'Mobile Phone Offer' && Name.indexOf('XMAS') == 0 ");
+		condition("Type is 'Mobile Phone Offer' and Name starts with('XMAS')",	"Type == 'Mobile Phone Offer' && Name.indexOf('XMAS') == 0 ");
 	}
 	
 	@Test

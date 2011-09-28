@@ -21,5 +21,4 @@ var Product = {
 		Type:13
 };
 
-
 loadProductWithAttributes(Product);
