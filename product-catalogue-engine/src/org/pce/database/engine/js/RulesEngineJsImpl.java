@@ -1,15 +1,10 @@
 package org.pce.database.engine.js;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
 import org.pce.database.ProductDatabase;
 import org.pce.database.engine.RulesEngine;
 import org.pce.model.Entity;
@@ -59,10 +54,13 @@ public class RulesEngineJsImpl implements RulesEngine {
 			Session s = getSession();
 			script = Utils.readResource("org/pce/database/engine/js/setup_common.js");
 			script+= Utils.readResource("org/pce/database/engine/js/setup_execution.js");
-			String jsScript = s.jsPreparser.parse(expression);
-			script += "var __pce_result = (" + jsScript + ")";
-			script += ";";
+			String[] lines = expression.split("\n");
+			String jsScript = "";
+			for (int i=0;i<lines.length;i++){
+				jsScript+= "var __pce_result = ("+s.jsPreparser.parse(lines[i])+");\n";
+			}
 			log(product, "Running expression: " + expression);
+			script+=jsScript;
 			String result = ""
 					+ s.cx.evaluateString(s.scope, script, "<cmd>", 1, null);
 			result = "" + s.scope.get("__pce_result", s.scope);

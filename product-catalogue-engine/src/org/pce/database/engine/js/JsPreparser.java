@@ -13,7 +13,7 @@ public class JsPreparser {
 		conditionMapping.put("(.*) equals (.*)", "$1 == $2");
 		conditionMapping.put("(.*) and (.*)", "$1 && $2");
 		conditionMapping.put("(.*) or (.*)", "$1 || $2");
-		conditionMapping.put("(.*) startswith\\s*\\((.*?)\\)(.*)", "$1.indexOf($2) == 0 $3");
+		conditionMapping.put("(.*) starts with\\s*\\((.*?)\\)(.*)", "$1.indexOf($2) == 0 $3");
 		conditionMapping.put("(.*) than (.*)", "$1 $2");
 		conditionMapping.put("(.*) before (.*)", "$1 < $2");
 		conditionMapping.put("(.*) after (.*)", "$1 > $2");
