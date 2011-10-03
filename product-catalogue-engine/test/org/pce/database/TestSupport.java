@@ -20,27 +20,29 @@ public class TestSupport {
 	@Test
 	public void testJsParser() {
 		compare("set price to 50",
-				"context.set(context.price(context.to(context.literal(context,'50'))))");
+				"context.set(context.price(context.to(context.literal(context,('50')))))");
 
 		compare("set price to [MobilePhoneId]",
 				"context.set(context.price(context.to(context.DB(context.MobilePhoneId(context)))))");
 
 		compare("set price to [MobilePhoneId] and add duration 1month",
-				"context.set(context.price(context.to(context.DB(context.MobilePhoneId(context.and(context.add(context.duration(context.literal(context,'1month')))))))))");
+				"context.set(context.price(context.to(context.DB(context.MobilePhoneId(context.and(context.add(context.duration(context.literal(context,('1month'))))))))))");
 
 		compare("Type is \'Mobile Phone ID\'",
-				"context.Type(context.is(context.literal(context,\'Mobile Phone ID\')))");
+				"context.Type(context.is(context.literal(context,('Mobile Phone ID'))))");
 
 		compare("Type is 'Mobile Phone Offer' and Name starts with 'XMAS'",
-				"context.Type(context.is(context.literal(context.and(context.Name(context.starts(context.with(context.literal(context,'XMAS'))))),\'Mobile Phone Offer\')))");
-	}
+				"context.Type(context.is(context.literal(context.and(context.Name(context.starts(context.with(context.literal(context,('XMAS')))))),('Mobile Phone Offer'))))");
+
+}
 	
 	@Test
 	public void testConditionParser(){
 		condition("Price is 2",	"Price == 2");
 		condition("Price is 2 and Name is 'XMAS'",	"Price == 2 && Name == 'XMAS'");
 		condition("Price > 10 or (Name is 'New XMAS' and Price < 20)",	"Price > 10 || (Name == 'New XMAS' && Price < 20)");
-		condition("Type is 'Mobile Phone Offer' and Name starts with('XMAS')",	"Type == 'Mobile Phone Offer' && Name.indexOf('XMAS') == 0 ");
+		condition("Type is 'Mobile Phone Offer' and Name starts with 'XMAS'",	"Type == 'Mobile Phone Offer' && Name.indexOf('XMAS') == 0 ");
+		condition("ValidFrom after '01/02/1996'",	"(new Date(ValidFrom)) > (new Date('01/02/1996'))");
 	}
 	
 	@Test

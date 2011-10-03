@@ -13,21 +13,24 @@ public class JsPreparser {
 		conditionMapping.put("(.*) equals (.*)", "$1 == $2");
 		conditionMapping.put("(.*) and (.*)", "$1 && $2");
 		conditionMapping.put("(.*) or (.*)", "$1 || $2");
-		conditionMapping.put("(.*) starts with\\s*\\((.*?)\\)(.*)", "$1.indexOf($2) == 0 $3");
+		conditionMapping.put("(.*) starts with\\s*\\'(.*?)\\'(.*)", "$1.indexOf('$2') == 0 $3");
 		conditionMapping.put("(.*) than (.*)", "$1 $2");
-		conditionMapping.put("(.*) before (.*)", "$1 < $2");
-		conditionMapping.put("(.*) after (.*)", "$1 > $2");
 		conditionMapping.put("(.*) less (.*)", "$1 < $2");
 		conditionMapping.put("(.*) bigger (.*)", "$1 > $2");
 		conditionMapping.put("(.*) Less (.*)", "$1 <= $2");
 		conditionMapping.put("(.*) Bigger (.*)", "$1 >=	 $2");
-		conditionMapping.put("(.*) Before (.*)", "$1 <= $2");
-		conditionMapping.put("(.*) After (.*)", "$1 >= $2");
+		
+		conditionMapping.put("(.*?)([^\\s]*) before ([^\\s]*)(.*?)", "$1(new Date($2)) < (new Date($3))$4");
+		conditionMapping.put("(.*?)([^\\s]*) Before ([^\\s]*)(.*?)", "$1(new Date($2)) <= (new Date($3))$4");
+		conditionMapping.put("(.*?)([^\\s]*) after ([^\\s]*)(.*?)", "$1(new Date($2)) > (new Date($3))$4");
+		conditionMapping.put("(.*?)([^\\s]*) After ([^\\s]*)(.*?)", "$1(new Date($2)) >= (new Date($3))$4");
+		
 		conditionMapping.put("(.*) smaller (.*)", "$1 < $2");
 		conditionMapping.put("(.*) bigger (.*)", "$1 > $2");
-
+		conditionMapping.put("(.*) bigger (.*)", "$1 > $2");
+		conditionMapping.put("(.*) date ([^\\s]*)(.*)", "$1 \\(new Date($2)\\) $3");
+//		conditionMapping.put("(.*) ('\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d')(.*)", "$1 \\(new Date($2)\\) $3");
 	}
-
 	private boolean isLiteral(String s) {
 		if (s.length() == 0)
 			return false;
@@ -38,8 +41,8 @@ public class JsPreparser {
 	private String quote(String literal) {
 		char c = literal.charAt(0);
 		if (c == '\'')
-			return literal;
-		return '\'' + literal + '\'';
+			return "("+literal+")";
+		return "(\'" + literal + "\')";
 	}
 
 	private String removeFirst(String text, char c) {
