@@ -1,5 +1,8 @@
 package org.pce.database;
 
+import java.io.File;
+import java.net.URL;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -8,7 +11,6 @@ import org.junit.Test;
 import org.pce.database.engine.RulesEngine;
 import org.pce.database.engine.js.RulesEngineJsImpl;
 import org.pce.database.excel.ProductDatabaseExcelImpl;
-import org.pce.database.gdata.ProductDatabaseGDataImpl;
 import org.pce.model.Entity;
 
 public class ProductDatabaseTest {
@@ -18,7 +20,11 @@ public class ProductDatabaseTest {
 
 	@BeforeClass
 	public static void setup() throws Exception {
-		database = new ProductDatabaseExcelImpl("./doc/database2.xls");
+		File f = new File("./doc/database2.xls");
+		URL url = f.toURI().toURL();
+// Uncomment to use public database hosted on google docs
+//		URL url = new URL("https://docs.google.com/spreadsheet/pub?hl=en_US&hl=en_US&key=0Am9D7ThqOUJidGxqdjBrSTlTUnMyMEhiZVdTcktYdEE&output=xls");
+		database = new ProductDatabaseExcelImpl(url);
 		rulesEngine = new RulesEngineJsImpl(database);
 	}
 
@@ -34,7 +40,7 @@ public class ProductDatabaseTest {
 		assertNotNull(e);
 		assertEquals("MP3", e.getID());
 		assertEquals("B10",e.getAttribute("Name"));
-		assertEquals("20",e.getAttribute("Price"));
+		assertEquals("20.0",e.getAttribute("Price"));
 	}
 
 	@Test
