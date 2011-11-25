@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,13 +32,14 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 	private final static Logger logger = Logger
 			.getLogger(ProductDatabaseExcelImpl.class);
 	private HSSFWorkbook workbook;
-	private String path;
+	private URL path;
 	private Map<String, Entity> entities = new HashMap<String, Entity>();
 	private DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 	long lastModifiedExcelDbTimestamp;
+	long refreshInterval = 10000;
 
-	public ProductDatabaseExcelImpl(String file) throws Exception {
-		this.path = file;
+	public ProductDatabaseExcelImpl(URL url) throws Exception {
+		this.path = url;
 		loadExcelDbIfModified();
 	}
 
@@ -50,18 +53,11 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 
 	private void _loadExcelDbIfModified() throws IOException {
 
-		File file = new File(path);
-		if (!file.canRead())
-			throw new IllegalArgumentException("Can't read " + path);
-
-		InputStream is = null;
-
-		long currentModifiedExcelDbTimestamp = file.lastModified();
-		if (currentModifiedExcelDbTimestamp > lastModifiedExcelDbTimestamp) {
-			logger.info("UPDATED EXCEL DB FOUND...");
-			lastModifiedExcelDbTimestamp = currentModifiedExcelDbTimestamp;
+		long now = System.currentTimeMillis();
+		if (lastModifiedExcelDbTimestamp+refreshInterval>now){
+			return;
 		}
-		is = new FileInputStream(file);
+		InputStream is = path.openStream();
 
 		entities = new HashMap<String, Entity>();
 		workbook = new HSSFWorkbook(is);
@@ -71,6 +67,8 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 				return;
 			storeSheet(sheet);
 		}
+		is.close();
+		lastModifiedExcelDbTimestamp = now;
 	}
 
 	protected void storeRow(HSSFRow row, HSSFRow columnNames) {
@@ -78,9 +76,13 @@ public class ProductDatabaseExcelImpl implements ProductDatabase {
 		entity.setCategory(row.getSheet().getSheetName());
 		for (int c = 0; c <= columnNames.getLastCellNum(); c++) {
 			String columnName = text(columnNames.getCell(c));
+			if (Utils.isEmpty(columnName))
+				continue;
 			String value = text(row.getCell(c));
 			entity.setAttribute(columnName, value);
 		}
+		if (Utils.isEmpty(entity.getID()))
+			return;
 		if (entities.containsKey(entity.getID()))
 			throw new RuntimeException("Duplicate entity " + entity.getID());
 		entities.put(entity.getID(), entity);
